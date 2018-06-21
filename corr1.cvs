@@ -1,0 +1,71 @@
+,target
+Id,-0.021916719443431102
+MSSubClass,-0.08428413512659555
+LotFrontage,						0.3517990965706782
+LotArea,				0.26384335387140545
+OverallQual,									0.7909816005838066
+OverallCond,-0.07785589404867764
+YearBuilt,							0.522897332879496
+YearRemodAdd,							0.5071009671113872
+MasVnrArea,							0.47749304709571067
+BsmtFinSF1,						0.38641980624215577
+BsmtFinSF2,-0.011378121450215228
+BsmtUnfSF,				0.21447910554696925
+TotalBsmtSF,								0.613580551559196
+1stFlrSF,								0.6058521846919155
+2ndFlrSF,						0.31933380283206647
+LowQualFinSF,-0.02560613000067987
+GrLivArea,									0.7086244776126529
+BsmtFullBath,				0.22712223313149757
+BsmtHalfBath,-0.016844154297359328
+FullBath,							0.5606637627484454
+HalfBath,				0.2841076755947785
+BedroomAbvGr,0.16821315430074166
+KitchenAbvGr,-0.1359073708421419
+TotRmsAbvGrd,							0.5337231555820231
+Fireplaces,							0.46692883675152386
+GarageYrBlt,							0.4863616774878606
+GarageCars,								0.6404091972583501
+GarageArea,								0.6234314389183605
+WoodDeckSF,						0.32441344456813126
+OpenPorchSF,						0.31585622711605527
+EnclosedPorch,-0.12857795792595642
+3SsnPorch,0.04458366533574757
+ScreenPorch,0.11144657114291104
+PoolArea,0.0924035494918722
+MiscVal,-0.021189579640303796
+MoSold,0.046432245223819266
+YrSold,-0.02892258516873059
+SalePrice,1.0
+target,1.0
+
+
+
+
+def my_input_fn(features, targets, batch_size=1, shuffle=True, num_epochs=None):
+    """Trains a linear regression model of one feature.
+  
+    Args:
+      features: pandas DataFrame of features
+      targets: pandas DataFrame of targets
+      batch_size: Size of batches to be passed to the model
+      shuffle: True or False. Whether to shuffle the data.
+      num_epochs: Number of epochs for which data should be repeated. None = repeat indefinitely
+    Returns:
+      Tuple of (features, labels) for next data batch
+    """
+    
+    # Convert pandas data into a dict of np arrays.
+    features = {key:np.array(value) for key,value in dict(features).items()}                                           
+ 
+    # Construct a dataset, and configure batching/repeating.
+    ds = Dataset.from_tensor_slices((features,targets)) # warning: 2GB limit
+    ds = ds.batch(batch_size).repeat(num_epochs)
+    
+    # Shuffle the data, if specified.
+    if shuffle:
+      ds = ds.shuffle(buffer_size=10000)
+    
+    # Return the next batch of data.
+    features, labels = ds.make_one_shot_iterator().get_next()
+    return features, labels
